@@ -286,11 +286,11 @@ THREEx.DomEvents.prototype._onMove	= function(eventName, mouseX, mouseY, origDom
 
 
 	// notify mouseMove - done at the end with a copy of the list to allow callback to remove handlers
-	notifyMove && this._notify('mousemove', newSelected, origDomEvent, intersect);
+	notifyMove && this._notify('mousemove', newSelected, origDomEvent, intersect, intersects);
 	// notify mouseEnter - done at the end with a copy of the list to allow callback to remove handlers
-	notifyOver && this._notify('mouseover', newSelected, origDomEvent, intersect);
+	notifyOver && this._notify('mouseover', newSelected, origDomEvent, intersect, intersects);
 	// notify mouseLeave - done at the end with a copy of the list to allow callback to remove handlers
-	notifyOut  && this._notify('mouseout' , oldSelected, origDomEvent, intersect);
+	notifyOut  && this._notify('mouseout' , oldSelected, origDomEvent, intersect, intersects);
 }
 
 
@@ -322,20 +322,20 @@ THREEx.DomEvents.prototype._onEvent	= function(eventName, mouseX, mouseY, origDo
 	if( !objectCtx )	return;
 
 	// notify handlers
-	this._notify(eventName, object3d, origDomEvent, intersect);
+	this._notify(eventName, object3d, origDomEvent, intersect, intersects);
 }
 
-THREEx.DomEvents.prototype._notify	= function(eventName, object3d, origDomEvent, intersect)
+THREEx.DomEvents.prototype._notify	= function(eventName, object3d, origDomEvent, intersect, intersects)
 {
 	var objectCtx	= this._objectCtxGet(object3d);
 	var handlers	= objectCtx ? objectCtx[eventName+'Handlers'] : null;
 	
 	// parameter check
-	console.assert(arguments.length === 4)
+	console.assert(arguments.length === 5)
 
 	// do bubbling
 	if( !objectCtx || !handlers || handlers.length === 0 ){
-		object3d.parent && this._notify(eventName, object3d.parent, origDomEvent, intersect);
+		object3d.parent && this._notify(eventName, object3d.parent, origDomEvent, intersect, intersects);
 		return;
 	}
 	
@@ -349,6 +349,7 @@ THREEx.DomEvents.prototype._notify	= function(eventName, object3d, origDomEvent,
 			target		: object3d,
 			origDomEvent	: origDomEvent,
 			intersect	: intersect,
+      intersects: intersects,
 			stopPropagation	: function(){
 				toPropagate	= false;
 			}
@@ -356,7 +357,7 @@ THREEx.DomEvents.prototype._notify	= function(eventName, object3d, origDomEvent,
 		if( !toPropagate )	continue;
 		// do bubbling
 		if( handler.useCapture === false ){
-			object3d.parent && this._notify(eventName, object3d.parent, origDomEvent, intersect);
+			object3d.parent && this._notify(eventName, object3d.parent, origDomEvent, intersect, intersects);
 		}
 	}
 }
