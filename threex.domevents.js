@@ -65,7 +65,11 @@
 //
 
 /** @namespace */
-var THREEx		= THREEx 		|| {};
+var THREE = window.THREE;
+if (typeof require == "function" && typeof THREE == "undefined") {
+  THREE = require("three");
+}
+var THREEx		= THREEx 	|| module.exports	|| {};
 
 // # Constructor
 THREEx.DomEvents	= function(camera, domElement)
